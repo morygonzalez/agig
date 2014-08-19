@@ -29,6 +29,10 @@ module Agig::OptParser
           opts[:interval] = interval
         end
 
+        on("-e", "--enterprise [ENTERPRISE=#{opts[:enterprise]}]", "set if track GitHub Enterprise") do |enterprise|
+          opts[:enterprise] = enterprise
+        end
+
         on("-l", "--log LOG", "log file") do |log|
           opts[:log] = log
         end
