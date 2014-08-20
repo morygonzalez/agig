@@ -2,10 +2,15 @@ require 'ostruct'
 require 'time'
 require 'net/irc'
 require 'octokit'
+require 'uri'
 
 class Agig::Session < Net::IRC::Server::Session
   def server_name
-    "github"
+    URI.parse(web_endpoint).host
+  end
+
+  def web_endpoint
+    @opts.web_endpoint || "https://github.com"
   end
 
   def server_version
@@ -19,6 +24,12 @@ class Agig::Session < Net::IRC::Server::Session
   def initialize(*args)
     super
     @notification_last_retrieved = @watch_last_retrieved = Time.now.utc - 3600
+    if @opts.web_endpoint && @opts.api_endpoint
+      Octokit.configure do |c|
+        c.api_endpoint = @opts.api_endpoint
+        c.web_endpoint = @opts.web_endpoint
+      end
+    end
   end
 
   def client
@@ -68,7 +79,7 @@ class Agig::Session < Net::IRC::Server::Session
       created_at = Time.parse(event.created_at).utc
       next if created_at <= @watch_last_retrieved
 
-      post event.actor.login, PRIVMSG, "#watch", "\0035#{event.payload.action}\017 \00314http://github.com/#{event.repo.name}\017"
+      post event.actor.login, PRIVMSG, "#watch", "\0035#{event.payload.action}\017 \00314#{web_endpoint}/#{event.repo.name}\017"
       @watch_last_retrieved = created_at
     end
 

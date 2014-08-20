@@ -9,6 +9,8 @@ module Agig::OptParser
       log: nil,
       debug: false,
       foreground: false,
+      web_endpoint: nil,
+      api_endpoint: nil
     }
 
     OptionParser.new do |parser|
@@ -29,8 +31,12 @@ module Agig::OptParser
           opts[:interval] = interval
         end
 
-        on("-e", "--enterprise [ENTERPRISE=#{opts[:enterprise]}]", "set if track GitHub Enterprise") do |enterprise|
-          opts[:enterprise] = enterprise
+        on("-w", "--web-endpoint [WEBENDPOINT=#{opts[:web_endpoint]}]", "GitHub Enterprise web endpoint") do |web_endpoint|
+          opts[:web_endpoint] = web_endpoint
+        end
+
+        on("-a", "--api-endpoint [APIENDPOINT=#{opts[:api_endpoint]}]", "GitHub Enterprise api endpoint") do |api_endpoint|
+          opts[:api_endpoint] = api_endpoint
         end
 
         on("-l", "--log LOG", "log file") do |log|
